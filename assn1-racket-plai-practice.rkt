@@ -43,7 +43,20 @@
 ;;
 ;; E.g., (match-length "wesselton" "weasel-town") evaluates to 2.
 (define (match-length string1 string2)
-  0)
+  (if
+    (equal? (string-length string1) (string-length string2))
+    (if
+      (string=? string1 string2)
+      (string-length string1)
+      (match-length
+        (substring string1 0 (- (string-length string1) 1))
+        (substring string2 0 (- (string-length string2) 1))
+      ))
+    (match-length
+      (substring string1 0 (min (string-length string1) (string-length string2)))
+      (substring string2 0 (min (string-length string1) (string-length string2)))
+    )
+  ))
 
 ; Trivial cases.
 (test (match-length "" "") 0)
@@ -85,7 +98,15 @@
 ;; If one list ends before the other, include all leftover elements of
 ;; the other list in a row.
 (define (interleave list1 list2)
-  empty)
+  (if (empty? list1)
+    list2
+    (if (empty? list2)
+      list1
+      (append (list (first list1)) (list (first list2)) (interleave (rest list1) (rest list2)))
+    )
+  )
+)
+
 
 (test (interleave empty empty) empty)
 (test (interleave '(1 2 3) empty) '(1 2 3))
