@@ -129,7 +129,20 @@
 ;; contains-sequence : (list-of symbol?) (list-of symbol?) -> boolean?
 ;; Determine whether data contains the elements from sequence in order (but not necessarily right next to each other).
 (define (contains-sequence data sequence)
-  false)
+  (if (empty? data)
+    (if (not (empty? sequence))
+      false
+      true
+    )
+    (if (empty? sequence)
+      true
+      (if (equal? (first data) (first sequence))
+        (contains-sequence (rest data) (rest sequence))
+        (contains-sequence (rest data) sequence)
+      )
+    )
+  )
+)
 
 ;; True tests, trivial though complex
 ;; plus repeated symbols.
