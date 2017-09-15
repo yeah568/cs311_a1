@@ -182,7 +182,14 @@
     [a-thingy (b) b]
     [other-thingy (n m sub-thingy) (and n m (all-thingied sub-thingy))]))
 
-
+(test (all-thingied (a-thingy true)) true)
+(test (all-thingied (a-thingy false)) false)
+(test (all-thingied (other-thingy true true (a-thingy true))) true)
+(test (all-thingied (other-thingy false false (a-thingy false))) false)
+(test (all-thingied (other-thingy true true (a-thingy false))) false)
+(test (all-thingied (other-thingy true false (a-thingy true))) false)
+(test (all-thingied (other-thingy true true (other-thingy true true (a-thingy true)))) true)
+(test (all-thingied (other-thingy true true (other-thingy true true (a-thingy false)))) false)
 
 
 
@@ -216,7 +223,16 @@
 ;; Precondition: the species with the given name appears AT MOST once (i.e., zero or one time).
 (define (find-species name tree)
   ;; Use a type-case!
-  false)
+  (type-case tree-of-life tree
+    [empty-tree () false]
+    [species (n e c1 c2)
+      (if (equal? name n)
+        tree
+        (or (find-species name c1) (find-species name c2))
+      )
+    ]
+  )
+)
 
 (test (find-species "elsa" (empty-tree)) false)
 (test (find-species "elsa" human-species-ToL) false)
@@ -233,7 +249,7 @@
 ;; Precondition: the species with the given name appears exactly once in the tree.
 ;; Hint: use find-species!
 (define (is-extinct? name tree)
-  false)
+  (species-extinct? (find-species name tree)))
 
 (test (is-extinct? "troll" three-species-ToL) true)
 (test (is-extinct? "human" three-species-ToL) false)
@@ -248,8 +264,37 @@
 ;;
 ;; Precondition: each named species appears AT MOST once (i.e., zero or one time).
 (define (common-ancestor name1 name2 tree)
-  false)
-
+  (type-case tree-of-life tree
+    [empty-tree () false]
+    [species (n e c1 c2)
+      (if (equal? n name1)
+        (if (or (find-species name2 c1) (find-species name2 c2) (equal? n name2))
+          tree
+          false
+        )
+        (if (equal? n name2)
+          (if (or (find-species name1 c1) (find-species name1 c2) (equal? n name1))
+            tree
+            false
+          )
+          (if (and (find-species name1 c1) (find-species name2 c1))
+            (common-ancestor name1 name2 c1)
+            (if (and (find-species name1 c2) (find-species name2 c2))
+              (common-ancestor name1 name2 c2)
+              (if (or
+                    (and (find-species name1 c1) (find-species name2 c2))
+                    (and (find-species name1 c2) (find-species name2 c1))
+                  )
+                  tree
+                  false
+              )
+            )
+          )
+        )
+      )
+    ]
+  )
+)
 
 ; Neither appears
 (test (common-ancestor "elsa" "anna" (empty-tree)) false)
@@ -321,5 +366,10 @@
 
 (define-type OE
   [group (expr1 OE?) (expr2 OE?)]
-  ;; More cases here..
-  )
+  [sequentially (expr1 OE?) (expr2 OE?)]
+  [together (expr1 OE?) (expr2 OE?)]
+  [join (expr1 OE?) (expr2 OE?)]
+  [arrive (expr OE?)]
+  [name (expr1 OE?) (id id-ref?) (expr2 OE?)]
+  [id-ref (expr symbol?)]
+)
