@@ -43,15 +43,14 @@
 ;;
 ;; E.g., (match-length "wesselton" "weasel-town") evaluates to 2.
 (define (match-length string1 string2)
-  (if
-    (equal? (string-length string1) (string-length string2))
-    (if
-      (string=? string1 string2)
+  (if (equal? (string-length string1) (string-length string2))
+    (if (string=? string1 string2)
       (string-length string1)
       (match-length
         (substring string1 0 (- (string-length string1) 1))
         (substring string2 0 (- (string-length string2) 1))
-      ))
+      )
+    )
     (match-length
       (substring string1 0 (min (string-length string1) (string-length string2)))
       (substring string2 0 (min (string-length string1) (string-length string2)))

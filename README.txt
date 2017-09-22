@@ -13,3 +13,6 @@ A deeper understanding of what makes for useful and practical features in a lang
 3. What's something cool, interesting, frustrating, or tangentially relevant that this assignment made you think about?
 
 As someone who has spent many years since CPSC 110 programming in languages like JavaScript, Python, and C#, I'm reminded of the fact that any problem that can be done iteratively can also be done recursively. My natural thought process is to think of things in an iterative manner - for each character in a string, for each element in a list, etc. However, as Racket is a functional language, you generally use recursive solutions, forcing me to change my way of thinking from iterative to recursive solutions.
+
+
+Bonus question completed in bonus.rkt.

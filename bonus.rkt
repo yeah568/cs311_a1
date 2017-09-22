@@ -20,22 +20,22 @@
 (define troll-species-ToL (species "troll" true (empty-tree) (empty-tree)))
 (define three-species-ToL (species "missing-link" true human-species-ToL troll-species-ToL))
 
-;; get-ancestors : (string tree-of-life) -> (listof tree-of-life?)
+;; get-ancestors : string tree-of-life -> (listof tree-of-life)
 ;; Returns a list of the parents of a species, starting from the highest in the tree.
 (define (get-ancestors name tree)
 	(type-case tree-of-life tree
 		[empty-tree () empty]
 		[species (n e c1 c2)
 			(if (equal? n name)
-				tree
+				(list tree)
 				(local [
 						(define sublist1 (get-ancestors name c1))
 						(define sublist2 (get-ancestors name c2))
 					]
 					(if (not (empty? sublist1))
-						(cons tree sublist1)
+						(append (list tree) sublist1)
 						(if (not (empty? sublist2))
-							(cons tree sublist2)
+							(append (list tree) sublist2)
 							empty
 						)
 					)
@@ -47,7 +47,7 @@
 
 ;; deepest-common-ancestor : (listof tree-of-life) (listof tree-of-life) -> (or false tree-of-life)
 (define (deepest-common-ancestor a1 a2)
-	(local [(define common-ancestors (take-common-prefix (list a1) (list a2)))]
+	(local [(define common-ancestors (take-common-prefix a1 a2))]
 		(if (empty? common-ancestors)
 			false
 			(last common-ancestors)
